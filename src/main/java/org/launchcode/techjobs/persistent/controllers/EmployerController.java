@@ -36,7 +36,6 @@ public String index(Model model) {
                                     Errors errors, Model model) {
 
         if (errors.hasErrors()) {
-            model.addAttribute("employers", "Create Employer");
             return "employers/add";
         }
         employerRepository.save(newEmployer);
