@@ -41,41 +41,68 @@ public class HomeController {
 
     @GetMapping("add")
     public String displayAddJobForm(Model model) {
-	model.addAttribute("title", "Add Job");
-    model.addAttribute("employer", employerRepository.findAll());
-    model.addAttribute(new Job());
+        model.addAttribute("title", "Add Job");
+        model.addAttribute("employer", employerRepository.findAll());
+        model.addAttribute(new Job());
         return "add";
     }
 
+//    @PostMapping("add")
+//    public String processAddJobForm(@ModelAttribute @Valid Job newJob,
+//                                       Errors errors, Model model, @RequestParam(required = false) Integer employerId) {
+//
+//
+//        if (errors.hasErrors()) {
+//            model.addAttribute("title", "Add Job");
+//            model.addAttribute("employerId", employerRepository.findById(employerId));
+//            model.addAttribute(new Job());
+//            return "jobs/add";
+//        }
+//        employerRepository.findById(employerId);
+//        return "redirect:";
+//
+//    }
+//
+//    @GetMapping("view/{jobId}")
+//    public String displayViewJob(Model model, @PathVariable int jobId) {
+//
+//            return "view";
+//    }
+//
+//}
+//@PostMapping("add")
+//public String processAddJobForm(@ModelAttribute @Valid Job newJob,
+//                                                  Errors errors, Model model, @RequestParam(required = false) Integer employerId) {
+//
+//    if (errors.hasErrors()) {
+//        model.addAttribute("title", "Add Job");
+//        return "add";
+//    }
+//    newJob = (Job) employerRepository.findAll();
+//    model.addAttribute("title", "Add Job");
+//    model.addAttribute("employerId", employerRepository.findById(employerId));
+//    return "redirect:";
+//    }
+
     @PostMapping("add")
     public String processAddJobForm(@ModelAttribute @Valid Job newJob,
-                                       Errors errors, Model model, @RequestParam(required = false) Integer employerId) {
+                                    Errors errors, Model model, @RequestParam(required = false) Integer employerId) {
 
 
-        if (errors.hasErrors()) {
+        if (employerId == null) {
             model.addAttribute("title", "Add Job");
-            model.addAttribute("employerId", employerRepository.findById(employerId));
-            model.addAttribute(new Job());
-            return "jobs/add";
+            model.addAttribute("employer", employerRepository.findAll());
+        } else {
+            Optional<Employer> result = employerRepository.findById(employerId);
+            if (result.isEmpty()) {
+                model.addAttribute("title", "Invalid Employer ID: " + employerId);
+            } else {
+                Employer employer = result.get();
+                model.addAttribute("title", "Jobs with Employer: " + employer.getName());
+                model.addAttribute("employer", newJob.getEmployer());
+
+            }
         }
-        employerRepository.findById(employerId);
-        return "redirect:";
-
+        return "add";
     }
-
-    @GetMapping("view/{jobId}")
-    public String displayViewJob(Model model, @PathVariable int jobId) {
-
-            return "view";
-    }
-
 }
-
-//    Optional<Employer>optEmployer = employerRepository.findById(employerId);
-//        if (optEmployer.isPresent()) {
-//                Employer employer = (Employer) optEmployer.get();
-//                model.addAttribute("employer", employer);
-//                return "employers/view";
-//                } else {
-//                return "redirect:../";
-//                }
